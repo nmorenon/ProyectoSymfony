@@ -99,4 +99,39 @@ class PokemonController extends AbstractController
         
     }
 
+
+
+    #[Route("/editPokemon/{id}", name: "editPokemon")]
+    public function editPokemon(Request $request, EntityManagerInterface $doctrine, $id) 
+    {
+        $repo = $doctrine->getRepository(Pokemon::class);
+        $pokemon = $repo-> find($id);
+
+      $form=$this->createForm(PokemonFormType::class, $pokemon);
+      $form->handleRequest($request);
+      if ($form->isSubmitted() && $form->isValid()){
+        $pokemon=$form->getData();
+        $doctrine->persist($pokemon);
+        $doctrine->flush();
+        $this->addFlash("success","Pokemon MODIFICADO correctamente");
+        return $this->redirectToRoute("listaPokemon");
+
+      }
+
+      return $this->render("Pokemons/AddPokemon.html.twig",["pokemonForm"=>$form]);
+        
+    }
+    #[Route("/removePokemon/{id}", name: "removePokemon")]
+    public function removePokemon($id,  EntityManagerInterface $doctrine)
+    {
+        $repo = $doctrine->getRepository(Pokemon::class);
+        $pokemon = $repo-> find($id);
+        $doctrine->remove($pokemon);
+        $doctrine->flush();
+
+        $this->addFlash("success","Pokemon BORRADO correctamente");
+        return $this->redirectToRoute("listaPokemon");
+    }
+
+
 }
