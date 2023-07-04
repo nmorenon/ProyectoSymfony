@@ -5,11 +5,11 @@
        {% for pokemon in listPokemon %}
             <div class="col mb-4">
                 <div class="card" style="width: 18rem;">
-                    <img src="{{pokemon.foto}}" class="card-img-top">
+                    <img src="{{pokemon.imagen}}" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">{{pokemon.nombre}}</h5>
                         <p class="card-text">{{pokemon.descripcion}}</p>
-                        <a href="#" class="btn btn-primary">Más Info</a>
+                        <a href="{{path("getPokemon", {"id": pokemon.id})}}" class="btn btn-primary">Más Info</a>
                     </div>
                 </div>
             </div>
