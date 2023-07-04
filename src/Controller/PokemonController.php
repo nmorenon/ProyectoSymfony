@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Debilidad;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Pokemon;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,9 +32,33 @@ class PokemonController extends AbstractController
         $pokemon3->setImagen("https://assets.pokemon.com/assets/cms2/img/pokedex/full/001.png");
         $pokemon3->setCodigo(1);
 
+        $debilidad = new Debilidad();
+        $debilidad->setNombre("Tierra");
+
+        $debilidad2 = new Debilidad();
+        $debilidad2->setNombre("Agua");
+
+        $debilidad3 = new Debilidad();
+        $debilidad3->setNombre("Fuego");
+
+        $debilidad4 = new Debilidad();
+        $debilidad4->setNombre("Roca");
+
+        $pokemon->addDebilidad($debilidad);
+
+        $pokemon2->addDebilidad($debilidad2);
+        $pokemon2->addDebilidad($debilidad4);
+
+        $pokemon3->addDebilidad($debilidad3);
+
         $doctrine->persist($pokemon);
         $doctrine->persist($pokemon2);
         $doctrine->persist($pokemon3);
+
+        $doctrine->persist($debilidad);
+        $doctrine->persist($debilidad2);
+        $doctrine->persist($debilidad3);
+        $doctrine->persist($debilidad4);
 
         $doctrine->flush();
         return new Response("pokemon insertado correctamente");
