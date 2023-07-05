@@ -18,6 +18,9 @@
                         <a class="nav-link active" href="/">Inicio <span class="sr-only">(current)</span></a>
                         <a class="nav-link" href="{{ path("listaPokemon") }}">Lista Pokemon</a>
                         <a class="nav-link" href="{{ path("newPokemon") }}">Crear Pokemon</a>
+
+                        <a class="nav-link"> {{app.user.name|default('Usuario no logado')}}</a>
+
                     </div>
                 </div>
             </nav>

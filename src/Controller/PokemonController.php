@@ -6,10 +6,14 @@ use App\Entity\Debilidad;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Pokemon;
 use App\Form\PokemonFormType;
+use App\Form\UserFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class PokemonController extends AbstractController
 {
@@ -114,14 +118,15 @@ class PokemonController extends AbstractController
         $doctrine->persist($pokemon);
         $doctrine->flush();
         $this->addFlash("success","Pokemon MODIFICADO correctamente");
-        return $this->redirectToRoute("listaPokemon");
 
+        return $this->redirectToRoute("listaPokemon");
       }
 
       return $this->render("Pokemons/AddPokemon.html.twig",["pokemonForm"=>$form]);
-        
     }
+
     #[Route("/removePokemon/{id}", name: "removePokemon")]
+    #[IsGranted('ROLE_ADMIN')]
     public function removePokemon($id,  EntityManagerInterface $doctrine)
     {
         $repo = $doctrine->getRepository(Pokemon::class);
@@ -133,5 +138,53 @@ class PokemonController extends AbstractController
         return $this->redirectToRoute("listaPokemon");
     }
 
+    #[Route("/newUser", name: "newUser")]
+    public function newUser(Request $request, EntityManagerInterface $doctrine, UserPasswordHasherInterface $hash) 
+    {
+      $form=$this->createForm(UserFormType::class);
+      $form->handleRequest($request);
+      if ($form->isSubmitted() && $form->isValid()){
+        $user=$form->getData();
 
+        $password= $user->getPassword();
+        $passwordEncrypted = $hash->hashPassword($user, $password);
+
+        $user->setPassword($passwordEncrypted);
+
+        $doctrine->persist($user);
+        $doctrine->flush();
+        $this->addFlash("success","Usuario insertado correctamente");
+
+        return $this->redirectToRoute("listaPokemon");
+      }
+
+      return $this->render("Pokemons/AddPokemon.html.twig",["pokemonForm"=>$form]);
+        
+    }
+
+
+    #[Route("/newUserAdmin", name: "newUserAdmin")]
+    public function newUserAdmin(Request $request, EntityManagerInterface $doctrine, UserPasswordHasherInterface $hash) 
+    {
+      $form=$this->createForm(UserFormType::class);
+      $form->handleRequest($request);
+      if ($form->isSubmitted() && $form->isValid()){
+        $user=$form->getData();
+
+        $password= $user->getPassword();
+        $passwordEncrypted = $hash->hashPassword($user, $password);
+
+        $user->setPassword($passwordEncrypted);
+        $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+
+        $doctrine->persist($user);
+        $doctrine->flush();
+        $this->addFlash("success","Usuario insertado correctamente");
+        
+        return $this->redirectToRoute("listaPokemon");
+      }
+
+      return $this->render("Pokemons/AddPokemon.html.twig",["pokemonForm"=>$form]);
+        
+    }
 }
